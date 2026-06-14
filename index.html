@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAFE | Streetwear Brutalista</title>
+    
+    <!-- Tailwind CSS (CDN para no requerir instalación) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Estilos Brutalistas -->
+    <style>
+        body { 
+            cursor: crosshair; 
+            background-color: white;
+            color: black;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        ::selection {
+            background-color: black;
+            color: white;
+        }
+
+        .brutal-noise {
+            position: fixed; 
+            top: -50%; 
+            left: -50%; 
+            width: 200vw; 
+            height: 200vh;
+            pointer-events: none; 
+            z-index: 9999; 
+            opacity: 0.12; /* Ligeramente más transparente para equilibrar */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            background-size: 100px; /* Hace que el patrón (los puntos) sea mucho más pequeño */
+            animation: noise-anim 0.2s steps(2) infinite;
+        }
+
+        @keyframes noise-anim {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-2%, 2%); }
+            40% { transform: translate(2%, -2%); }
+            60% { transform: translate(-2%, -2%); }
+            80% { transform: translate(2%, 2%); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            animation: marquee 15s linear infinite;
+            will-change: transform;
+        }
+
+        @keyframes marquee-slow {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee-slow {
+            animation: marquee-slow 40s linear infinite;
+            will-change: transform;
+        }
+
+        .brutal-shadow {
+            box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+            transition: all 0.1s ease-out;
+        }
+        .brutal-shadow:hover {
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+            transform: translate(4px, 4px);
+        }
+        .brutal-btn:active {
+            box-shadow: 0px 0px 0px 0px rgba(0,0,0,1) !important;
+            transform: translate(8px, 8px) !important;
+        }
+
+        .brutal-input:focus {
+            outline: none;
+            background-color: black;
+            color: white;
+        }
+        .brutal-input:focus::placeholder {
+            color: #555;
+        }
+
+        /* Ocultar elementos lógicamente */
+        .hidden-view {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="pb-0 relative overflow-x-hidden">
+
+    <!-- Ruido de fondo -->
+    <div class="brutal-noise"></div>
+
+    <!-- Banner promocional -->
+    <div class="w-full bg-black text-white text-center text-xs md:text-sm py-2 font-black tracking-widest uppercase border-b-4 border-white">
+        ENVÍOS GRATIS EN PEDIDOS MAYORES A $1500 MXN / NO HAY DEVOLUCIONES, PIÉNSALO BIEN.
+    </div>
+
+    <!-- Cabecera / Logo -->
+    <header class="w-full flex justify-center items-center py-8 md:py-12 px-4 relative border-b-8 border-black bg-white z-40">
+        <img 
+            src="https://raw.githubusercontent.com/eamxat/Imagenes-Zeqel/e78e9ea4a7f4681aebbd9e34c02e3079c4369129/Stafe.svg" 
+            alt="Stafe Logo" 
+            class="w-full max-w-[800px] h-auto object-contain cursor-pointer hover:scale-105 transition-transform duration-100"
+            onclick="switchView('Inicio')"
+        />
+        
+        <div class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 flex gap-4">
+            <button class="relative border-4 border-black p-2 bg-white brutal-shadow brutal-btn" onclick="toggleCart(true)">
+                <i data-lucide="shopping-bag" class="w-6 h-6 md:w-8 md:h-8 font-black"></i>
+                <span id="cart-badge" class="hidden absolute -top-3 -right-3 bg-red-600 text-white border-2 border-black w-6 h-6 flex justify-center items-center font-black text-xs">
+                    0
+                </span>
+            </button>
+            <button class="md:hidden border-4 border-black p-2 bg-white brutal-shadow brutal-btn" onclick="toggleMobileMenu()">
+                <i data-lucide="menu" class="w-6 h-6" id="mobile-menu-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Navegación Desktop -->
+    <nav class="hidden md:block w-full border-b-4 border-black bg-white sticky top-0 z-30">
+        <ul class="flex justify-between items-center w-full max-w-7xl mx-auto px-4 lg:px-8 text-lg font-black uppercase tracking-widest">
+            <li onclick="switchView('Inicio')" id="nav-Inicio" class="nav-item flex-1 text-center py-4 border-r-4 border-black cursor-pointer transition-colors duration-100 bg-black text-white">Inicio</li>
+            <li onclick="switchView('Ofertas')" id="nav-Ofertas" class="nav-item flex-1 text-center py-4 border-r-4 border-black cursor-pointer transition-colors duration-100 hover:bg-yellow-300">Ofertas</li>
+            <li onclick="switchView('Historia')" id="nav-Historia" class="nav-item flex-1 text-center py-4 border-r-4 border-black cursor-pointer transition-colors duration-100 hover:bg-yellow-300">Historia</li>
+            <li onclick="switchView('Cuenta')" id="nav-Cuenta" class="nav-item flex-1 text-center py-4 border-r-4 border-black cursor-pointer transition-colors duration-100 hover:bg-yellow-300">Cuenta</li>
+            <li onclick="toggleSearch(true)" class="flex-1 text-center py-4 cursor-pointer hover:bg-black hover:text-white transition-colors duration-100 flex justify-center items-center gap-2">
+                Buscar <i data-lucide="search" class="w-5 h-5"></i>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Menú Móvil -->
+    <nav id="mobile-menu" class="hidden md:hidden w-full border-b-4 border-black bg-white z-30 relative">
+        <ul class="flex flex-col w-full text-xl font-black uppercase tracking-widest">
+            <li onclick="switchView('Inicio'); toggleMobileMenu();" class="border-b-4 border-black py-4 px-4 cursor-pointer hover:bg-yellow-300">Inicio</li>
+            <li onclick="switchView('Ofertas'); toggleMobileMenu();" class="border-b-4 border-black py-4 px-4 cursor-pointer hover:bg-yellow-300">Ofertas</li>
+            <li onclick="switchView('Historia'); toggleMobileMenu();" class="border-b-4 border-black py-4 px-4 cursor-pointer hover:bg-yellow-300">Historia</li>
+            <li onclick="switchView('Cuenta'); toggleMobileMenu();" class="border-b-4 border-black py-4 px-4 cursor-pointer hover:bg-yellow-300">Cuenta</li>
+            <li onclick="toggleSearch(true); toggleMobileMenu();" class="border-b-4 border-black py-4 px-4 cursor-pointer bg-black text-white flex justify-between items-center">
+                BUSCAR <i data-lucide="search" class="w-5 h-5"></i>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- CONTENEDOR DE VISTAS -->
+    <div id="main-content">
+        
+        <!-- VISTA: INICIO -->
+        <main id="view-Inicio" class="w-full max-w-7xl mx-auto px-4 lg:px-8 py-8 md:py-12 flex flex-col md:flex-row gap-8 md:gap-12">
+            <aside class="w-full md:w-1/4 lg:w-1/5 flex flex-col gap-6 shrink-0">
+                <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tighter leading-none">Filtra <br/>tu caos:</h2>
+                <div class="flex flex-col gap-3">
+                    <div class="flex flex-row md:flex-col items-start gap-3 flex-wrap mt-4" id="filters-container">
+                        <button onclick="setFilter('Todos')" id="filter-Todos" class="filter-btn w-full text-left border-4 border-black px-4 py-3 text-lg uppercase font-black transition-all brutal-btn bg-black text-white brutal-shadow transform translate-x-1 translate-y-1">Todos</button>
+                        <button onclick="setFilter('Hombres')" id="filter-Hombres" class="filter-btn w-full text-left border-4 border-black px-4 py-3 text-lg uppercase font-black transition-all brutal-btn bg-white text-black brutal-shadow hover:bg-yellow-300">Hombres</button>
+                        <button onclick="setFilter('Mujeres')" id="filter-Mujeres" class="filter-btn w-full text-left border-4 border-black px-4 py-3 text-lg uppercase font-black transition-all brutal-btn bg-white text-black brutal-shadow hover:bg-yellow-300">Mujeres</button>
+                        <button onclick="setFilter('Unisex')" id="filter-Unisex" class="filter-btn w-full text-left border-4 border-black px-4 py-3 text-lg uppercase font-black transition-all brutal-btn bg-white text-black brutal-shadow hover:bg-yellow-300">Unisex</button>
+                    </div>
+                </div>
+            </aside>
+            <section id="products-grid" class="w-full md:w-3/4 lg:w-4/5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Productos inyectados por JS -->
+            </section>
+        </main>
+
+        <!-- VISTA: OFERTAS -->
+        <div id="view-Ofertas" class="w-full hidden-view">
+            <div class="w-full bg-red-600 text-white font-black text-6xl uppercase overflow-hidden py-4 border-y-4 border-black mb-8 flex">
+                <div class="animate-marquee flex shrink-0 whitespace-nowrap">
+                    <span class="pr-8">🔥 OFERTAS 🔥 HASTA 50% DESCUENTO 🔥 TODO DEBE IRSE</span>
+                    <span class="pr-8">🔥 OFERTAS 🔥 HASTA 50% DESCUENTO 🔥 TODO DEBE IRSE</span>
+                </div>
+                <div class="animate-marquee flex shrink-0 whitespace-nowrap">
+                    <span class="pr-8">🔥 OFERTAS 🔥 HASTA 50% DESCUENTO 🔥 TODO DEBE IRSE</span>
+                    <span class="pr-8">🔥 OFERTAS 🔥 HASTA 50% DESCUENTO 🔥 TODO DEBE IRSE</span>
+                </div>
+            </div>
+            <div id="sales-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-4 lg:px-8 max-w-7xl mx-auto mb-12">
+                <!-- Productos en oferta inyectados por JS -->
+            </div>
+        </div>
+
+        <!-- VISTA: HISTORIA -->
+        <div id="view-Historia" class="w-full max-w-7xl mx-auto px-4 lg:px-8 py-12 hidden-view">
+            <div class="grid md:grid-cols-2 gap-12 items-center border-4 border-black p-8 brutal-shadow bg-yellow-300">
+                <div class="flex flex-col gap-6">
+                    <h1 class="text-6xl md:text-8xl font-black uppercase leading-none tracking-tighter">Nuestra<br/>Raíz</h1>
+                    <p class="text-xl font-bold border-l-8 border-black pl-4 bg-white/50 backdrop-blur-sm p-4">
+                        Nacidos en el asfalto. STAFE no es solo ropa, es una declaración de independencia contra la moda rápida y desechable. Construimos armaduras para la jungla de concreto.
+                    </p>
+                    <img src="https://images.unsplash.com/photo-1499887142886-791eca5918cd?auto=format&fit=crop&q=80&w=800" alt="Callejón urbano" class="border-4 border-black brutal-shadow grayscale hover:grayscale-0 transition-all duration-300" />
+                </div>
+                <div class="flex flex-col gap-8">
+                    <img src="https://images.unsplash.com/photo-1604147706283-d7119b5b822c?auto=format&fit=crop&q=80&w=600" alt="Detalle de tela" class="border-4 border-black brutal-shadow" />
+                    <div class="bg-black text-white p-8 brutal-shadow relative z-10">
+                        <h2 class="text-3xl font-black uppercase mb-4">Manifiesto:</h2>
+                        <ul class="text-lg font-bold list-disc pl-4 space-y-2">
+                            <li>Materiales crudos.</li>
+                            <li>Producción limitada.</li>
+                            <li>Sin compromisos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA: CUENTA -->
+        <div id="view-Cuenta" class="w-full max-w-7xl mx-auto px-4 lg:px-8 py-12 flex justify-center items-center hidden-view">
+            <div class="w-full max-w-md bg-white border-4 border-black p-8 brutal-shadow relative">
+                <div class="absolute -top-4 -left-4 bg-black text-white px-4 py-1 font-black uppercase transform -rotate-6 border-2 border-white outline outline-4 outline-black z-10">
+                    Acceso VIP
+                </div>
+                <h2 class="text-4xl font-black uppercase mb-8 mt-4 tracking-tighter">Ingresa a tu cuenta</h2>
+                <form class="flex flex-col gap-6" onsubmit="event.preventDefault()">
+                    <div class="flex flex-col">
+                        <label class="font-bold uppercase text-sm mb-2">Correo Electrónico</label>
+                        <input type="email" placeholder="USUARIO@MAIL.COM" class="border-4 border-black p-4 uppercase font-bold text-lg brutal-input transition-colors duration-100" />
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="font-bold uppercase text-sm mb-2">Contraseña</label>
+                        <input type="password" placeholder="••••••••" class="border-4 border-black p-4 uppercase font-bold text-lg brutal-input transition-colors duration-100" />
+                    </div>
+                    <button class="bg-black text-white border-4 border-black p-4 text-xl uppercase font-black tracking-widest brutal-shadow brutal-btn hover:bg-yellow-400 hover:text-black hover:border-black mt-4 transition-colors">
+                        Entrar al sistema
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CARRITO -->
+    <div id="cart-modal" class="fixed inset-0 z-50 flex justify-end hidden-view">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleCart(false)"></div>
+        <div class="w-full max-w-md bg-white border-l-8 border-black h-full relative z-10 flex flex-col transform transition-transform">
+            <div class="flex justify-between items-center p-6 border-b-4 border-black bg-yellow-300">
+                <h2 class="text-3xl font-black uppercase tracking-tighter">Tu Botín</h2>
+                <button onclick="toggleCart(false)" class="border-4 border-black p-1 bg-white brutal-shadow brutal-btn">
+                    <i data-lucide="x" class="w-6 h-6 stroke-[3px]"></i>
+                </button>
+            </div>
+            
+            <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 flex flex-col gap-6 bg-gray-100">
+                <!-- Items del carrito -->
+            </div>
+
+            <div id="cart-footer" class="p-6 border-t-4 border-black bg-white hidden-view">
+                <div class="flex justify-between text-2xl font-black uppercase mb-6">
+                    <span>Total:</span>
+                    <span id="cart-total">$0</span>
+                </div>
+                <button class="w-full bg-black text-white py-4 text-2xl font-black uppercase brutal-shadow brutal-btn hover:bg-green-500 hover:text-black flex justify-center items-center gap-2">
+                    Pagar Ahora <i data-lucide="arrow-right" class="stroke-[4px]"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: BÚSQUEDA -->
+    <div id="search-modal" class="fixed inset-0 z-[60] bg-yellow-300 flex flex-col justify-center items-center p-4 hidden-view">
+        <button onclick="toggleSearch(false)" class="absolute top-8 right-8 border-4 border-black p-2 bg-white brutal-shadow brutal-btn hover:bg-black hover:text-white">
+            <i data-lucide="x" class="w-10 h-10 stroke-[3px]"></i>
+        </button>
+        <div class="w-full max-w-4xl flex flex-col gap-8">
+            <h2 class="text-6xl md:text-9xl font-black uppercase tracking-tighter text-black text-center">BUSCAR</h2>
+            <input 
+                type="text" 
+                placeholder="¿QUÉ ESTÁS BUSCANDO?" 
+                id="search-input"
+                class="w-full border-8 border-black p-6 text-2xl md:text-5xl font-black uppercase brutal-input text-center bg-white brutal-shadow" 
+            />
+            <button class="border-8 border-black bg-black text-white py-6 text-3xl font-black uppercase hover:bg-white hover:text-black transition-colors brutal-shadow brutal-btn">
+                ENCONTRAR
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="w-full border-t-8 border-black bg-yellow-300 relative overflow-hidden flex flex-col mt-12 z-20">
+        <div class="w-full text-black font-black text-[12vw] leading-none tracking-tighter uppercase overflow-hidden py-2 border-b-4 border-black flex">
+            <div class="animate-marquee-slow flex shrink-0 whitespace-nowrap">
+                <span class="pr-8">STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE</span>
+            </div>
+            <div class="animate-marquee-slow flex shrink-0 whitespace-nowrap">
+                <span class="pr-8">STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE STAFE</span>
+            </div>
+        </div>
+        <div class="flex flex-col md:flex-row justify-between items-center p-6 bg-black text-white font-bold text-sm md:text-base uppercase tracking-widest">
+            <span>© STAFE TODOS LOS DERECHOS RESERVADOS</span>
+            <span class="text-yellow-300 mt-2 md:mt-0 text-xl font-black">Ensenada B.C 2026.</span>
+        </div>
+    </footer>
+
+    <!-- LÓGICA DE JAVASCRIPT -->
+    <script>
+        // Datos simulados de productos
+        const PRODUCTS = [
+            { id: 1, name: 'Sudadera Boxy', gender: 'Mujeres', price: 1200, image: 'https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=crop&q=80&w=600' },
+            { id: 2, name: 'Chaqueta Denim', gender: 'Hombres', price: 1800, salePrice: 1400, image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&q=80&w=600' },
+            { id: 3, name: 'Top Asimétrico', gender: 'Mujeres', price: 850, image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&q=80&w=600' },
+            { id: 4, name: 'Gorro Beanie', gender: 'Unisex',  price: 450, salePrice: 300, image: 'https://images.unsplash.com/photo-1617137984086-ce0196850c90?auto=format&fit=crop&q=80&w=600' },
+            { id: 5, name: 'Pantalón Cargo', gender: 'Hombres', price: 1600, image: 'https://images.unsplash.com/photo-1574015974293-817f0ebebb74?auto=format&fit=crop&q=80&w=600' },
+            { id: 6, name: 'Camiseta Oversize', gender: 'Mujeres', price: 600, salePrice: 450, image: 'https://images.unsplash.com/photo-1605518216938-7c31b7b14ad0?auto=format&fit=crop&q=80&w=600' },
+            { id: 7, name: 'Hoodie Essential', gender: 'Unisex',  price: 1350, image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=600' },
+            { id: 8, name: 'Chaleco Táctico', gender: 'Hombres', price: 2100, image: 'https://images.unsplash.com/photo-1550614000-4b95d466f2c8?auto=format&fit=crop&q=80&w=600' },
+        ];
+
+        // Estado Global
+        let cart = [];
+        let activeFilter = 'Todos';
+        let isMobileMenuOpen = false;
+
+        // Inicializar iconos de Lucide
+        lucide.createIcons();
+
+        // ---- SISTEMA DE VISTAS ----
+        function switchView(viewName) {
+            // Ocultar todas las vistas
+            document.getElementById('view-Inicio').classList.add('hidden-view');
+            document.getElementById('view-Ofertas').classList.add('hidden-view');
+            document.getElementById('view-Historia').classList.add('hidden-view');
+            document.getElementById('view-Cuenta').classList.add('hidden-view');
+            
+            // Mostrar vista seleccionada
+            document.getElementById(`view-${viewName}`).classList.remove('hidden-view');
+
+            // Actualizar clases de navegación
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.className = "nav-item flex-1 text-center py-4 border-r-4 border-black cursor-pointer transition-colors duration-100 hover:bg-yellow-300";
+            });
+            document.getElementById(`nav-${viewName}`).className = "nav-item flex-1 text-center py-4 border-r-4 border-black cursor-pointer transition-colors duration-100 bg-black text-white";
+        }
+
+        // ---- FILTROS Y PRODUCTOS ----
+        function getProductHTML(product, isSaleBadge = false) {
+            const priceHTML = product.salePrice 
+                ? `<span class="font-black text-2xl text-red-600">$${product.salePrice}</span>
+                   <span class="font-bold text-sm text-gray-500 line-through">$${product.price}</span>`
+                : `<span class="font-black text-2xl">$${product.price}</span>`;
+
+            const badgeHTML = (isSaleBadge || product.salePrice) 
+                ? `<div class="absolute top-4 -left-4 z-10 bg-red-600 text-white border-4 border-black px-4 py-2 font-black uppercase text-xl transform -rotate-12 brutal-shadow">REBAJA</div>` 
+                : '';
+
+            return `
+                <div class="group relative flex flex-col border-4 border-black bg-white brutal-shadow transition-all duration-100 mb-4">
+                    ${badgeHTML}
+                    <div class="relative overflow-hidden aspect-[3/4] border-b-4 border-black bg-gray-200 flex items-center justify-center">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-100 group-hover:scale-110 group-hover:grayscale" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'text-center p-4\\'><span class=\\'text-4xl\\'>❌</span><p class=\\'font-black uppercase mt-2\\'>Imagen Rota</p></div>';">
+                        <div class="absolute inset-0 bg-yellow-300/0 group-hover:bg-yellow-300/20 mix-blend-multiply transition-colors duration-100"></div>
+                    </div>
+                    <div class="p-4 flex flex-col gap-2 bg-white">
+                        <div class="flex justify-between items-start gap-2">
+                            <h3 class="font-black uppercase text-xl md:text-2xl leading-none">${product.name}</h3>
+                            <div class="flex flex-col items-end">
+                                ${priceHTML}
+                            </div>
+                        </div>
+                        <p class="font-bold text-sm text-gray-500 uppercase">${product.gender}</p>
+                        <button onclick="addToCart(${product.id})" class="mt-4 w-full border-4 border-black bg-white text-black py-3 font-black uppercase text-lg brutal-shadow brutal-btn hover:bg-black hover:text-white transition-colors">
+                            Agregar al Caos
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const filtered = activeFilter === 'Todos' ? PRODUCTS : PRODUCTS.filter(p => p.gender === activeFilter);
+            grid.innerHTML = filtered.map(p => getProductHTML(p, false)).join('');
+        }
+
+        function renderSales() {
+            const grid = document.getElementById('sales-grid');
+            const sales = PRODUCTS.filter(p => p.salePrice);
+            grid.innerHTML = sales.map(p => getProductHTML(p, true)).join('');
+        }
+
+        function setFilter(filterType) {
+            activeFilter = filterType;
+            
+            // Actualizar botones UI
+            ['Todos', 'Hombres', 'Mujeres', 'Unisex'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (f === filterType) {
+                    btn.className = "filter-btn w-full text-left border-4 border-black px-4 py-3 text-lg uppercase font-black transition-all brutal-btn bg-black text-white brutal-shadow transform translate-x-1 translate-y-1";
+                } else {
+                    btn.className = "filter-btn w-full text-left border-4 border-black px-4 py-3 text-lg uppercase font-black transition-all brutal-btn bg-white text-black brutal-shadow hover:bg-yellow-300";
+                }
+            });
+
+            renderProducts();
+        }
+
+        // ---- CARRITO DE COMPRAS ----
+        function addToCart(productId) {
+            const product = PRODUCTS.find(p => p.id === productId);
+            if (product) {
+                cart.push(product);
+                updateCartUI();
+                toggleCart(true);
+            }
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            const badge = document.getElementById('cart-badge');
+            const footer = document.getElementById('cart-footer');
+            const totalEl = document.getElementById('cart-total');
+
+            // Actualizar Badge en Header
+            if (cart.length > 0) {
+                badge.innerText = cart.length;
+                badge.classList.remove('hidden');
+                footer.classList.remove('hidden-view');
+            } else {
+                badge.classList.add('hidden');
+                footer.classList.add('hidden-view');
+            }
+
+            // Renderizar Items
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="h-full flex items-center justify-center text-2xl font-black uppercase text-gray-400 text-center">Tu carrito está más vacío que mis bolsillos.</div>`;
+            } else {
+                container.innerHTML = cart.map((item, idx) => `
+                    <div class="flex gap-4 border-4 border-black p-4 bg-white brutal-shadow mb-2">
+                        <img src="${item.image}" alt="${item.name}" class="w-20 h-24 object-cover border-2 border-black" />
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-black uppercase text-lg leading-tight">${item.name}</h3>
+                                <p class="font-bold text-gray-500 text-sm">${item.gender}</p>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <span class="font-black text-xl">$${item.salePrice || item.price}</span>
+                                <button onclick="removeFromCart(${idx})" class="text-red-600 hover:text-black transition-colors brutal-btn">
+                                    <i data-lucide="trash-2" class="w-6 h-6 stroke-[3px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Calcular Total
+                const total = cart.reduce((sum, item) => sum + (item.salePrice || item.price), 0);
+                totalEl.innerText = `$${total}`;
+            }
+
+            // Refrescar iconos inyectados dinámicamente
+            lucide.createIcons();
+        }
+
+        // ---- MODALES Y MENÚS ----
+        function toggleCart(show) {
+            const modal = document.getElementById('cart-modal');
+            if (show) modal.classList.remove('hidden-view');
+            else modal.classList.add('hidden-view');
+        }
+
+        function toggleSearch(show) {
+            const modal = document.getElementById('search-modal');
+            if (show) {
+                modal.classList.remove('hidden-view');
+                setTimeout(() => document.getElementById('search-input').focus(), 100);
+            } else {
+                modal.classList.add('hidden-view');
+            }
+        }
+
+        function toggleMobileMenu() {
+            isMobileMenuOpen = !isMobileMenuOpen;
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            
+            if (isMobileMenuOpen) {
+                menu.classList.remove('hidden');
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                menu.classList.add('hidden');
+                icon.setAttribute('data-lucide', 'menu');
+            }
+            lucide.createIcons();
+        }
+
+        // Inicializar la app
+        window.onload = () => {
+            renderProducts();
+            renderSales();
+            updateCartUI();
+        };
+
+    </script>
+</body>
+</html>
